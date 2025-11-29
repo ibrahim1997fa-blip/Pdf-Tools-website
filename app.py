@@ -2,8 +2,8 @@ import os
 import io
 import zipfile
 import tempfile
-import pythoncom
-import comtypes.client
+# import pythoncom  # <-- تم الحذف
+# import comtypes.client # <-- تم الحذف
 from flask import Flask, render_template, request, send_file, flash, redirect, url_for
 from PyPDF2 import PdfReader, PdfWriter
 from PyPDF2.errors import FileNotDecryptedError
@@ -149,57 +149,17 @@ def extract_pages():
         flash(str(e))
         return redirect(url_for('extract_pages_tool'))
 
-# --- Word to PDF Converter Tool ---
+# --- [DISABLED] Word to PDF Converter Tool ---
 @app.route('/word-to-pdf-tool')
 def word_to_pdf_tool():
-    return render_template('word_to_pdf.html')
+    # This tool is disabled on the live server as it requires Windows-specific libraries.
+    flash("This tool is currently unavailable on the live server.")
+    return redirect(url_for('index'))
 
 @app.route('/word-to-pdf', methods=['POST'])
 def word_to_pdf():
-    file = request.files.get('word_file')
-    if not file:
-        flash("No file uploaded.")
-        return redirect(url_for('word_to_pdf_tool'))
-
-    original_filename = file.filename
-    temp_word_path = os.path.join(tempfile.gettempdir(), original_filename)
-    file.save(temp_word_path)
-    
-    temp_pdf_path = os.path.splitext(temp_word_path)[0] + '.pdf'
-
-    try:
-        pythoncom.CoInitialize()
-        word = comtypes.client.CreateObject('Word.Application')
-        word.Visible = False
-        doc = word.Documents.Open(temp_word_path)
-        doc.SaveAs(temp_pdf_path, FileFormat=17)
-        doc.Close()
-        word.Quit()
-
-        with open(temp_pdf_path, 'rb') as f:
-            pdf_bytes = f.read()
-
-        output_io = io.BytesIO(pdf_bytes)
-        output_io.seek(0)
-
-        download_name = os.path.splitext(original_filename)[0] + '.pdf'
-        
-        return send_file(
-            output_io,
-            as_attachment=True,
-            download_name=download_name,
-            mimetype='application/pdf'
-        )
-    except Exception as e:
-        print(f"Error during Word to PDF conversion: {e}")
-        flash("An error occurred during conversion. Please ensure Microsoft Word is installed and not busy.")
-        return redirect(url_for('word_to_pdf_tool'))
-    finally:
-        if os.path.exists(temp_word_path):
-            os.remove(temp_word_path)
-        if os.path.exists(temp_pdf_path):
-            os.remove(temp_pdf_path)
-        pythoncom.CoUninitialize()
+    flash("This tool is currently unavailable on the live server.")
+    return redirect(url_for('index'))
 
 # --- Images to PDF Tool ---
 @app.route('/images-to-pdf-tool')
@@ -245,56 +205,16 @@ def images_to_pdf():
         mimetype='application/pdf'
     )
 
-# --- PowerPoint to PDF Tool ---
+# --- [DISABLED] PowerPoint to PDF Tool ---
 @app.route('/pptx-to-pdf-tool')
 def pptx_to_pdf_tool():
-    return render_template('pptx_to_pdf.html')
+    flash("This tool is currently unavailable on the live server.")
+    return redirect(url_for('index'))
 
 @app.route('/pptx-to-pdf', methods=['POST'])
 def pptx_to_pdf():
-    file = request.files.get('pptx_file')
-    if not file:
-        flash("No file uploaded.")
-        return redirect(url_for('pptx_to_pdf_tool'))
-
-    original_filename = file.filename
-    temp_pptx_path = os.path.join(tempfile.gettempdir(), original_filename)
-    file.save(temp_pptx_path)
-    
-    temp_pdf_path = os.path.splitext(temp_pptx_path)[0] + '.pdf'
-
-    try:
-        pythoncom.CoInitialize()
-        powerpoint = comtypes.client.CreateObject("Powerpoint.Application")
-        presentation = powerpoint.Presentations.Open(temp_pptx_path)
-        presentation.SaveAs(temp_pdf_path, FileFormat=32)
-        presentation.Close()
-        powerpoint.Quit()
-
-        with open(temp_pdf_path, 'rb') as f:
-            pdf_bytes = f.read()
-
-        output_io = io.BytesIO(pdf_bytes)
-        output_io.seek(0)
-
-        download_name = os.path.splitext(original_filename)[0] + '.pdf'
-        
-        return send_file(
-            output_io,
-            as_attachment=True,
-            download_name=download_name,
-            mimetype='application/pdf'
-        )
-    except Exception as e:
-        print(f"Error during PowerPoint to PDF conversion: {e}")
-        flash("An error occurred during conversion. Please ensure Microsoft PowerPoint is installed and not busy.")
-        return redirect(url_for('pptx_to_pdf_tool'))
-    finally:
-        if os.path.exists(temp_pptx_path):
-            os.remove(temp_pptx_path)
-        if os.path.exists(temp_pdf_path):
-            os.remove(temp_pdf_path)
-        pythoncom.CoUninitialize()
+    flash("This tool is currently unavailable on the live server.")
+    return redirect(url_for('index'))
 
 # --- PDF to Images Tool ---
 @app.route('/pdf-to-images-tool')
@@ -376,9 +296,9 @@ def html_to_pdf():
         return redirect(url_for('html_to_pdf_tool'))
 
     try:
-        path_wkhtmltopdf = r'C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe'
-        config = pdfkit.configuration(wkhtmltopdf=path_wkhtmltopdf)
-        pdf_bytes = pdfkit.from_url(url, False, configuration=config)
+        # On Render, wkhtmltopdf needs to be installed via a build script.
+        # For now, this will likely fail, but we'll fix it if needed.
+        pdf_bytes = pdfkit.from_url(url, False)
         pdf_buffer = io.BytesIO(pdf_bytes)
         pdf_buffer.seek(0)
 
@@ -388,13 +308,9 @@ def html_to_pdf():
             download_name='website.pdf',
             mimetype='application/pdf'
         )
-    except FileNotFoundError:
-        print("wkhtmltopdf not found at the specified path.")
-        flash("Configuration error: Could not find the PDF conversion utility.")
-        return redirect(url_for('html_to_pdf_tool'))
     except Exception as e:
         print(f"Error during HTML to PDF conversion: {e}")
-        flash("Failed to convert URL to PDF. The URL may be invalid or the website might be blocking requests.")
+        flash("Failed to convert URL to PDF. The tool might be unavailable or the URL is invalid.")
         return redirect(url_for('html_to_pdf_tool'))
 
 # --- Compress PDF Tool ---
@@ -707,10 +623,8 @@ def repair():
         flash("Please select a PDF file to repair.")
         return redirect(url_for('repair_tool'))
     try:
-        # PyMuPDF's 'save' with garbage collection is a good way to repair/rebuild a PDF
         pdf_document = fitz.open(stream=file.read(), filetype="pdf")
         output_buffer = io.BytesIO()
-        # garbage=4 is a deep clean, deflate compresses, and linear optimizes for web
         pdf_document.save(output_buffer, garbage=4, deflate=True, linear=True)
         pdf_document.close()
         output_buffer.seek(0)
@@ -738,10 +652,8 @@ def pdfa_to_pdf():
         flash("Please select a PDF/A file.")
         return redirect(url_for('pdfa_to_pdf_tool'))
     try:
-        # Simply opening and saving the file with PyMuPDF often removes PDF/A compliance
         pdf_document = fitz.open(stream=file.read(), filetype="pdf")
         output_buffer = io.BytesIO()
-        # Saving without any special flags converts it to a standard PDF
         pdf_document.save(output_buffer)
         pdf_document.close()
         output_buffer.seek(0)

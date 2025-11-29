@@ -1,233 +1,96 @@
 {% extends "base.html" %}
 
-{% block title %}أدوات PDF المتكاملة - الصفحة الرئيسية{% endblock %}
+{% block title %}أدوات PDF المتكاملة - دمج، تقسيم، ضغط، والمزيد{% endblock %}
 
 {% block content %}
 <div class="text-center mb-5">
     <h1 class="display-4">أدوات PDF المتكاملة</h1>
-    <p class="lead">كل ما تحتاجه للتعامل مع ملفات PDF والمستندات في مكان واحد.</p>
+    <p class="lead">كل ما تحتاجه للتعامل مع ملفات PDF في مكان واحد. مجاني، آمن، وسهل الاستخدام.</p>
 </div>
 
-<div class="row g-4">
-    <!-- بطاقة دمج PDF -->
-    <div class="col-lg-4 col-md-6">
-        <div class="card h-100 shadow-sm">
-            <div class="card-body d-flex flex-column">
-                <h2 class="card-title h5">دمج PDF</h2>
-                <p class="card-text">اجمع عدة ملفات PDF في ملف واحد بسهولة.</p>
-                <a href="/merge-tool" class="btn btn-primary mt-auto">اذهب إلى الأداة</a>
-            </div>
-        </div>
-    </div>
-
-    <!-- بطاقة فصل PDF -->
-    <div class="col-lg-4 col-md-6">
-        <div class="card h-100 shadow-sm">
-            <div class="card-body d-flex flex-column">
-                <h2 class="card-title h5">فصل PDF</h2>
-                <p class="card-text">قسّم ملف PDF واحد إلى عدة ملفات منفصلة.</p>
-                <a href="/split-tool" class="btn btn-primary mt-auto">اذهب إلى الأداة</a>
-            </div>
-        </div>
-    </div>
-
-    <!-- بطاقة استخراج الصور -->
-    <div class="col-lg-4 col-md-6">
-        <div class="card h-100 shadow-sm">
-            <div class="card-body d-flex flex-column">
-                <h2 class="card-title h5">استخراج الصور</h2>
-                <p class="card-text">اسحب كل الصور من ملف PDF واحفظها.</p>
-                <a href="/extract-tool" class="btn btn-primary mt-auto">اذهب إلى الأداة</a>
-            </div>
-        </div>
-    </div>
-
-    <!-- بطاقة استخراج الصفحات -->
-    <div class="col-lg-4 col-md-6">
-        <div class="card h-100 shadow-sm">
-            <div class="card-body d-flex flex-column">
-                <h2 class="card-title h5">استخراج صفحات محددة</h2>
-                <p class="card-text">اختر صفحات معينة من ملف PDF واحفظها.</p>
-                <a href="/extract-pages-tool" class="btn btn-primary mt-auto">اذهب إلى الأداة</a>
-            </div>
-        </div>
-    </div>
-
-    <!-- بطاقة تحويل وورد إلى PDF -->
-    <div class="col-lg-4 col-md-6">
-        <div class="card h-100 shadow-sm">
-            <div class="card-body d-flex flex-column">
-                <h2 class="card-title h5">تحويل Word إلى PDF</h2>
-                <p class="card-text">حوّل مستندات .doc و .docx إلى PDF.</p>
-                <a href="/word-to-pdf-tool" class="btn btn-primary mt-auto">اذهب إلى الأداة</a>
-            </div>
-        </div>
-    </div>
-
-    <!-- بطاقة تحويل الصور إلى PDF -->
-    <div class="col-lg-4 col-md-6">
-        <div class="card h-100 shadow-sm">
-            <div class="card-body d-flex flex-column">
-                <h2 class="card-title h5">تحويل الصور إلى PDF</h2>
-                <p class="card-text">اجمع صور JPG و PNG في ملف PDF واحد.</p>
-                <a href="/images-to-pdf-tool" class="btn btn-primary mt-auto">اذهب إلى الأداة</a>
-            </div>
-        </div>
-    </div>
-
-    <!-- بطاقة تحويل PowerPoint إلى PDF -->
-    <div class="col-lg-4 col-md-6">
-        <div class="card h-100 shadow-sm">
-            <div class="card-body d-flex flex-column">
-                <h2 class="card-title h5">تحويل PowerPoint إلى PDF</h2>
-                <p class="card-text">حوّل عروض .pptx التقديمية إلى PDF.</p>
-                <a href="/pptx-to-pdf-tool" class="btn btn-primary mt-auto">اذهب إلى الأداة</a>
-            </div>
-        </div>
-    </div>
-
-    <!-- بطاقة PDF إلى صور -->
-    <div class="col-lg-4 col-md-6">
-        <div class="card h-100 shadow-sm">
-            <div class="card-body d-flex flex-column">
-                <h2 class="card-title h5">PDF إلى صور</h2>
-                <p class="card-text">حوّل كل صفحة في ملف PDF إلى صورة JPG.</p>
-                <a href="/pdf-to-images-tool" class="btn btn-primary mt-auto">اذهب إلى الأداة</a>
-            </div>
-        </div>
-    </div>
-
-    <!-- بطاقة PDF إلى Word -->
-    <div class="col-lg-4 col-md-6">
-        <div class="card h-100 shadow-sm">
-            <div class="card-body d-flex flex-column">
-                <h2 class="card-title h5">PDF إلى Word</h2>
-                <p class="card-text">استخرج النصوص من PDF إلى ملف txt.</p>
-                <a href="/pdf-to-word-tool" class="btn btn-primary mt-auto">اذهب إلى الأداة</a>
-            </div>
-        </div>
-    </div>
-
-    <!-- بطاقة HTML إلى PDF -->
-    <div class="col-lg-4 col-md-6">
-        <div class="card h-100 shadow-sm">
-            <div class="card-body d-flex flex-column">
-                <h2 class="card-title h5">HTML إلى PDF</h2>
-                <p class="card-text">حوّل أي صفحة ويب إلى ملف PDF عبر رابطها.</p>
-                <a href="/html-to-pdf-tool" class="btn btn-primary mt-auto">اذهب إلى الأداة</a>
-            </div>
-        </div>
-    </div>
-
-    <!-- بطاقة ضغط PDF -->
-    <div class="col-lg-4 col-md-6">
-        <div class="card h-100 shadow-sm">
-            <div class="card-body d-flex flex-column">
-                <h2 class="card-title h5">ضغط PDF</h2>
-                <p class="card-text">قلل حجم ملفات PDF مع الحفاظ على الجودة.</p>
-                <a href="/compress-tool" class="btn btn-primary mt-auto">اذهب إلى الأداة</a>
-            </div>
-        </div>
-    </div>
-
-    <!-- بطاقة حماية PDF -->
-    <div class="col-lg-4 col-md-6">
-        <div class="card h-100 shadow-sm">
-            <div class="card-body d-flex flex-column">
-                <h2 class="card-title h5">حماية PDF</h2>
-                <p class="card-text">أضف كلمة مرور لتشفير ملفات PDF الخاصة بك.</p>
-                <a href="/protect-tool" class="btn btn-primary mt-auto">اذهب إلى الأداة</a>
-            </div>
-        </div>
-    </div>
-
-    <!-- بطاقة فك حماية PDF -->
-    <div class="col-lg-4 col-md-6">
-        <div class="card h-100 shadow-sm">
-            <div class="card-body d-flex flex-column">
-                <h2 class="card-title h5">فك حماية PDF</h2>
-                <p class="card-text">أزل كلمة المرور من ملفات PDF المشفرة.</p>
-                <a href="/unlock-tool" class="btn btn-primary mt-auto">اذهب إلى الأداة</a>
-            </div>
-        </div>
-    </div>
-
-    <!-- بطاقة تدوير PDF -->
-    <div class="col-lg-4 col-md-6">
-        <div class="card h-100 shadow-sm">
-            <div class="card-body d-flex flex-column">
-                <h2 class="card-title h5">تدوير PDF</h2>
-                <p class="card-text">قم بتدوير صفحات ملف PDF بالزاوية التي تريدها.</p>
-                <a href="/rotate-tool" class="btn btn-primary mt-auto">اذهب إلى الأداة</a>
-            </div>
-        </div>
-    </div>
+<div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
     
-    <!-- بطاقة إضافة أرقام الصفحات -->
-    <div class="col-lg-4 col-md-6">
-        <div class="card h-100 shadow-sm">
-            <div class="card-body d-flex flex-column">
-                <h2 class="card-title h5">إضافة أرقام الصفحات</h2>
-                <p class="card-text">أضف ترقيماً تلقائياً لصفحات ملف PDF.</p>
-                <a href="/add-page-numbers-tool" class="btn btn-primary mt-auto">اذهب إلى الأداة</a>
+    <!-- دمج PDF -->
+    <div class="col">
+        <div class="card h-100 tool-card shadow-sm">
+            <div class="card-body text-center">
+                <h5 class="card-title">دمج PDF</h5>
+                <p class="card-text">اجمع عدة ملفات PDF في ملف واحد.</p>
+                <a href="{{ url_for('merge') }}" class="stretched-link"></a>
             </div>
         </div>
     </div>
 
-    <!-- بطاقة إضافة علامة مائية -->
-    <div class="col-lg-4 col-md-6">
-        <div class="card h-100 shadow-sm">
-            <div class="card-body d-flex flex-column">
-                <h2 class="card-title h5">إضافة علامة مائية</h2>
-                <p class="card-text">ضع نصاً كعلامة مائية على صفحات PDF.</p>
-                <a href="/add-watermark-tool" class="btn btn-primary mt-auto">اذهب إلى الأداة</a>
+    <!-- تقسيم PDF -->
+    <div class="col">
+        <div class="card h-100 tool-card shadow-sm">
+            <div class="card-body text-center">
+                <h5 class="card-title">تقسيم PDF</h5>
+                <p class="card-text">استخرج كل صفحة من ملف PDF كملف منفصل.</p>
+                <a href="{{ url_for('split') }}" class="stretched-link"></a>
             </div>
         </div>
     </div>
 
-    <!-- بطاقة حذف صفحات -->
-    <div class="col-lg-4 col-md-6">
-        <div class="card h-100 shadow-sm">
-            <div class="card-body d-flex flex-column">
-                <h2 class="card-title h5">حذف صفحات</h2>
-                <p class="card-text">أزل صفحات معينة من ملف PDF بسهولة.</p>
-                <a href="/delete-pages-tool" class="btn btn-primary mt-auto">اذهب إلى الأداة</a>
+    <!-- ضغط PDF -->
+    <div class="col">
+        <div class="card h-100 tool-card shadow-sm">
+            <div class="card-body text-center">
+                <h5 class="card-title">ضغط PDF</h5>
+                <p class="card-text">قلل حجم ملف PDF مع الحفاظ على الجودة.</p>
+                <a href="{{ url_for('compress') }}" class="stretched-link"></a>
             </div>
         </div>
     </div>
 
-    <!-- بطاقة تنظيم الصفحات -->
-    <div class="col-lg-4 col-md-6">
-        <div class="card h-100 shadow-sm">
-            <div class="card-body d-flex flex-column">
-                <h2 class="card-title h5">تنظيم الصفحات</h2>
-                <p class="card-text">أعد ترتيب صفحات PDF أو احذفها.</p>
-                <a href="/organize-pages-tool" class="btn btn-primary mt-auto">اذهب إلى الأداة</a>
+    <!-- حماية PDF -->
+    <div class="col">
+        <div class="card h-100 tool-card shadow-sm">
+            <div class="card-body text-center">
+                <h5 class="card-title">حماية PDF</h5>
+                <p class="card-text">أضف كلمة مرور لملف PDF الخاص بك.</p>
+                <a href="{{ url_for('protect') }}" class="stretched-link"></a>
             </div>
         </div>
     </div>
 
-    <!-- بطاقة إصلاح PDF -->
-    <div class="col-lg-4 col-md-6">
-        <div class="card h-100 shadow-sm">
-            <div class="card-body d-flex flex-column">
-                <h2 class="card-title h5">إصلاح PDF</h2>
-                <p class="card-text">محاولة إصلاح ملفات PDF التالفة أو المعطوبة.</p>
-                <a href="/repair-tool" class="btn btn-primary mt-auto">اذهب إلى الأداة</a>
+    <!-- فك حماية PDF -->
+    <div class="col">
+        <div class="card h-100 tool-card shadow-sm">
+            <div class="card-body text-center">
+                <h5 class="card-title">فك حماية PDF</h5>
+                <p class="card-text">أزل كلمة المرور من ملف PDF.</p>
+                <a href="{{ url_for('unlock') }}" class="stretched-link"></a>
             </div>
         </div>
     </div>
 
-    <!-- بطاقة PDF/A إلى PDF -->
-    <div class="col-lg-4 col-md-6">
-        <div class="card h-100 shadow-sm">
-            <div class="card-body d-flex flex-column">
-                <h2 class="card-title h5">PDF/A إلى PDF</h2>
-                <p class="card-text">حوّل PDF للأرشفة إلى PDF عادي قابل للتعديل.</p>
-                <a href="/pdfa-to-pdf-tool" class="btn btn-primary mt-auto">اذهب إلى الأداة</a>
+    <!-- تدوير PDF -->
+    <div class="col">
+        <div class="card h-100 tool-card shadow-sm">
+            <div class="card-body text-center">
+                <h5 class="card-title">تدوير PDF</h5>
+                <p class="card-text">قم بتدوير صفحات ملف PDF.</p>
+                <a href="{{ url_for('rotate') }}" class="stretched-link"></a>
             </div>
         </div>
     </div>
 
-</div>
-{% endblock %}
+    <!-- حذف صفحات -->
+    <div class="col">
+        <div class="card h-100 tool-card shadow-sm">
+            <div class="card-body text-center">
+                <h5 class="card-title">حذف صفحات</h5>
+                <p class="card-text">أزل صفحات معينة من ملف PDF.</p>
+                <a href="{{ url_for('delete_pages') }}" class="stretched-link"></a>
+            </div>
+        </div>
+    </div>
+
+    <!-- ترقيم الصفحات -->
+    <div class="col">
+        <div class="card h-100 tool-card shadow-sm">
+            <div class="card-body text-center">
+                <h5 class="card-title">ترقيم الصفحات</h5>
+                <p class="card-text">أضف أرقام الصفحات إلى ملف PDF.</p>
+                <a href="{{ url_for('add_page_nu

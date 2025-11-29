@@ -2,14 +2,13 @@ import os
 import io
 import zipfile
 import tempfile
-# import pythoncom  # <-- تم الحذف
-# import comtypes.client # <-- تم الحذف
-from flask import Flask, render_template, request, send_file, flash, redirect, url_for
+from flask import Flask, render_template, request, send_file, flash, redirect, url_for, make_response
 from PyPDF2 import PdfReader, PdfWriter
 from PyPDF2.errors import FileNotDecryptedError
 import fitz  # PyMuPDF
 from PIL import Image
 import pdfkit
+from datetime import datetime # <-- إضافة مهمة
 
 app = Flask(__name__)
 app.secret_key = 'a_super_secret_key' # Needed for flashing messages
@@ -44,14 +43,89 @@ def parse_page_numbers(page_str, max_pages):
 def index():
     return render_template('index.html')
 
-# --- (The existing 18 tools are here, code is unchanged) ---
-# --- Merge PDF Tool ---
-@app.route('/merge-tool')
-def merge_tool():
+# --- Tool Routes ---
+
+@app.route('/merge')
+def merge():
     return render_template('merge.html')
 
-@app.route('/merge', methods=['POST'])
-def merge():
+@app.route('/split')
+def split():
+    return render_template('split.html')
+
+@app.route('/extract_images')
+def extract_images():
+    return render_template('extract_images.html')
+
+@app.route('/extract_pages')
+def extract_pages():
+    return render_template('extract_pages.html')
+
+@app.route('/word_to_pdf')
+def word_to_pdf():
+    return render_template('word_to_pdf.html')
+
+@app.route('/pdf_to_word')
+def pdf_to_word():
+    return render_template('pdf_to_word.html')
+
+@app.route('/pdf_to_images')
+def pdf_to_images():
+    return render_template('pdf_to_images.html')
+
+@app.route('/image_to_pdf')
+def image_to_pdf():
+    return render_template('image_to_pdf.html')
+
+@app.route('/html_to_pdf')
+def html_to_pdf():
+    return render_template('html_to_pdf.html')
+
+@app.route('/compress')
+def compress():
+    return render_template('compress.html')
+
+@app.route('/protect')
+def protect():
+    return render_template('protect.html')
+
+@app.route('/unlock')
+def unlock():
+    return render_template('unlock.html')
+
+@app.route('/rotate')
+def rotate():
+    return render_template('rotate.html')
+
+@app.route('/add_page_numbers')
+def add_page_numbers():
+    return render_template('add_page_numbers.html')
+
+@app.route('/add_watermark')
+def add_watermark():
+    return render_template('add_watermark.html')
+
+@app.route('/delete_pages')
+def delete_pages():
+    return render_template('delete_pages.html')
+
+@app.route('/organize_pages')
+def organize_pages():
+    return render_template('organize_pages.html')
+
+@app.route('/repair')
+def repair():
+    return render_template('repair.html')
+
+@app.route('/pdfa_to_pdf')
+def pdfa_to_pdf():
+    return render_template('pdfa_to_pdf.html')
+
+
+# --- Processing Logic (unchanged) ---
+
+@app.route('/merge-process', methods=['POST'])
+def merge_process():
     files = request.files.getlist('pdf_files')
     merger = PdfWriter()
     for file in files:
@@ -65,13 +139,8 @@ def merge():
     merger.close()
     return send_file(output_io, as_attachment=True, download_name='merged.pdf', mimetype='application/pdf')
 
-# --- Split PDF Tool ---
-@app.route('/split-tool')
-def split_tool():
-    return render_template('split.html')
-
-@app.route('/split', methods=['POST'])
-def split():
+@app.route('/split-process', methods=['POST'])
+def split_process():
     file = request.files['pdf_file']
     if not file: return "No file uploaded", 400
     reader = PdfReader(file.stream)
@@ -87,13 +156,8 @@ def split():
     zip_io.seek(0)
     return send_file(zip_io, mimetype='application/zip', as_attachment=True, download_name='split_pages.zip')
 
-# --- Extract Images Tool ---
-@app.route('/extract-tool')
-def extract_tool():
-    return render_template('extract.html')
-
-@app.route('/extract', methods=['POST'])
-def extract():
+@app.route('/extract-images-process', methods=['POST'])
+def extract_images_process():
     file = request.files['pdf_file']
     if not file: return "No file uploaded", 400
     pdf_document = fitz.open(stream=file.read(), filetype="pdf")
@@ -111,19 +175,18 @@ def extract():
                 image_ext = base_image["ext"]
                 zipf.writestr(f"image_{page_num + 1}_{img_index + 1}.{image_ext}", image_bytes)
     zip_io.seek(0)
-    if image_count == 0: return "No images found in the PDF.", 404
+    if image_count == 0: 
+        flash("No images found in the PDF.")
+        return redirect(url_for('extract_images'))
     return send_file(zip_io, mimetype='application/zip', as_attachment=True, download_name='extracted_images.zip')
 
-# --- Extract Specific Pages Tool ---
-@app.route('/extract-pages-tool')
-def extract_pages_tool():
-    return render_template('extract_pages.html')
-
-@app.route('/extract-pages', methods=['POST'])
-def extract_pages():
+@app.route('/extract-pages-process', methods=['POST'])
+def extract_pages_process():
     file = request.files['pdf_file']
     page_numbers_str = request.form['page_numbers']
-    if not file: return "No file uploaded", 400
+    if not file: 
+        flash("No file uploaded")
+        return redirect(url_for('extract_pages'))
     
     try:
         reader_for_count = PdfReader(file.stream)
@@ -139,7 +202,7 @@ def extract_pages():
             
         if not writer.pages:
             flash("Selected page numbers are out of range or invalid.")
-            return redirect(url_for('extract_pages_tool'))
+            return redirect(url_for('extract_pages'))
             
         output_io = io.BytesIO()
         writer.write(output_io)
@@ -147,32 +210,20 @@ def extract_pages():
         return send_file(output_io, as_attachment=True, download_name='extracted_pages.pdf', mimetype='application/pdf')
     except ValueError as e:
         flash(str(e))
-        return redirect(url_for('extract_pages_tool'))
+        return redirect(url_for('extract_pages'))
 
-# --- [DISABLED] Word to PDF Converter Tool ---
-@app.route('/word-to-pdf-tool')
-def word_to_pdf_tool():
-    # This tool is disabled on the live server as it requires Windows-specific libraries.
+@app.route('/word-to-pdf-process', methods=['POST'])
+def word_to_pdf_process():
     flash("This tool is currently unavailable on the live server.")
-    return redirect(url_for('index'))
+    return redirect(url_for('word_to_pdf'))
 
-@app.route('/word-to-pdf', methods=['POST'])
-def word_to_pdf():
-    flash("This tool is currently unavailable on the live server.")
-    return redirect(url_for('index'))
-
-# --- Images to PDF Tool ---
-@app.route('/images-to-pdf-tool')
-def images_to_pdf_tool():
-    return render_template('images_to_pdf.html')
-
-@app.route('/images-to-pdf', methods=['POST'])
-def images_to_pdf():
+@app.route('/images-to-pdf-process', methods=['POST'])
+def images_to_pdf_process():
     uploaded_files = request.files.getlist('image_files')
     
     if not uploaded_files or uploaded_files[0].filename == '':
         flash("Please select at least one image file.")
-        return redirect(url_for('images_to_pdf_tool'))
+        return redirect(url_for('image_to_pdf'))
 
     image_list = []
     first_image = None
@@ -186,47 +237,25 @@ def images_to_pdf():
                 else:
                     image_list.append(image)
             except Exception as e:
-                print(f"Error processing image {file.filename}: {e}")
                 flash(f"Could not process image: {file.filename}")
-                return redirect(url_for('images_to_pdf_tool'))
+                return redirect(url_for('image_to_pdf'))
 
     if first_image is None:
         flash("No valid image files were uploaded. Please use PNG, JPG, or JPEG.")
-        return redirect(url_for('images_to_pdf_tool'))
+        return redirect(url_for('image_to_pdf'))
 
     pdf_buffer = io.BytesIO()
     first_image.save(pdf_buffer, "PDF" ,resolution=100.0, save_all=True, append_images=image_list)
     pdf_buffer.seek(0)
     
-    return send_file(
-        pdf_buffer,
-        as_attachment=True,
-        download_name='converted_images.pdf',
-        mimetype='application/pdf'
-    )
+    return send_file(pdf_buffer, as_attachment=True, download_name='converted_images.pdf', mimetype='application/pdf')
 
-# --- [DISABLED] PowerPoint to PDF Tool ---
-@app.route('/pptx-to-pdf-tool')
-def pptx_to_pdf_tool():
-    flash("This tool is currently unavailable on the live server.")
-    return redirect(url_for('index'))
-
-@app.route('/pptx-to-pdf', methods=['POST'])
-def pptx_to_pdf():
-    flash("This tool is currently unavailable on the live server.")
-    return redirect(url_for('index'))
-
-# --- PDF to Images Tool ---
-@app.route('/pdf-to-images-tool')
-def pdf_to_images_tool():
-    return render_template('pdf_to_images.html')
-
-@app.route('/pdf-to-images', methods=['POST'])
-def pdf_to_images():
+@app.route('/pdf-to-images-process', methods=['POST'])
+def pdf_to_images_process():
     file = request.files.get('pdf_file')
     if not file:
         flash("Please select a PDF file.")
-        return redirect(url_for('pdf_to_images_tool'))
+        return redirect(url_for('pdf_to_images'))
 
     try:
         pdf_document = fitz.open(stream=file.read(), filetype="pdf")
@@ -242,21 +271,15 @@ def pdf_to_images():
         return send_file(zip_buffer, mimetype='application/zip', as_attachment=True, download_name='pdf_to_images.zip')
 
     except Exception as e:
-        print(f"Error during PDF to Images conversion: {e}")
         flash("An error occurred while converting the PDF to images.")
-        return redirect(url_for('pdf_to_images_tool'))
+        return redirect(url_for('pdf_to_images'))
 
-# --- PDF to Word (as Text) Tool ---
-@app.route('/pdf-to-word-tool')
-def pdf_to_word_tool():
-    return render_template('pdf_to_word.html')
-
-@app.route('/pdf-to-word', methods=['POST'])
-def pdf_to_word():
+@app.route('/pdf-to-word-process', methods=['POST'])
+def pdf_to_word_process():
     file = request.files.get('pdf_file')
     if not file:
         flash("Please select a PDF file.")
-        return redirect(url_for('pdf_to_word_tool'))
+        return redirect(url_for('pdf_to_word'))
 
     try:
         pdf_document = fitz.open(stream=file.read(), filetype="pdf")
@@ -272,58 +295,34 @@ def pdf_to_word():
         original_filename = os.path.splitext(file.filename)[0]
         download_name = f"{original_filename}.txt"
 
-        return send_file(
-            text_buffer,
-            as_attachment=True,
-            download_name=download_name,
-            mimetype='text/plain'
-        )
+        return send_file(text_buffer, as_attachment=True, download_name=download_name, mimetype='text/plain')
     except Exception as e:
-        print(f"Error during PDF to Text conversion: {e}")
         flash("Failed to extract text from PDF. The file might be image-based (scanned).")
-        return redirect(url_for('pdf_to_word_tool'))
+        return redirect(url_for('pdf_to_word'))
 
-# --- HTML to PDF Tool ---
-@app.route('/html-to-pdf-tool')
-def html_to_pdf_tool():
-    return render_template('html_to_pdf.html')
-
-@app.route('/html-to-pdf', methods=['POST'])
-def html_to_pdf():
+@app.route('/html-to-pdf-process', methods=['POST'])
+def html_to_pdf_process():
     url = request.form.get('url')
     if not url:
         flash("Please enter a URL.")
-        return redirect(url_for('html_to_pdf_tool'))
+        return redirect(url_for('html_to_pdf'))
 
     try:
-        # On Render, wkhtmltopdf needs to be installed via a build script.
-        # For now, this will likely fail, but we'll fix it if needed.
         pdf_bytes = pdfkit.from_url(url, False)
         pdf_buffer = io.BytesIO(pdf_bytes)
         pdf_buffer.seek(0)
 
-        return send_file(
-            pdf_buffer,
-            as_attachment=True,
-            download_name='website.pdf',
-            mimetype='application/pdf'
-        )
+        return send_file(pdf_buffer, as_attachment=True, download_name='website.pdf', mimetype='application/pdf')
     except Exception as e:
-        print(f"Error during HTML to PDF conversion: {e}")
         flash("Failed to convert URL to PDF. The tool might be unavailable or the URL is invalid.")
-        return redirect(url_for('html_to_pdf_tool'))
+        return redirect(url_for('html_to_pdf'))
 
-# --- Compress PDF Tool ---
-@app.route('/compress-tool')
-def compress_tool():
-    return render_template('compress.html')
-
-@app.route('/compress', methods=['POST'])
-def compress():
+@app.route('/compress-process', methods=['POST'])
+def compress_process():
     file = request.files.get('pdf_file')
     if not file:
         flash("Please select a PDF file.")
-        return redirect(url_for('compress_tool'))
+        return redirect(url_for('compress'))
     try:
         pdf_document = fitz.open(stream=file.read(), filetype="pdf")
         output_buffer = io.BytesIO()
@@ -331,29 +330,18 @@ def compress():
         pdf_document.close()
         output_buffer.seek(0)
         
-        return send_file(
-            output_buffer,
-            as_attachment=True,
-            download_name='compressed.pdf',
-            mimetype='application/pdf'
-        )
+        return send_file(output_buffer, as_attachment=True, download_name='compressed.pdf', mimetype='application/pdf')
     except Exception as e:
-        print(f"Error during PDF compression: {e}")
         flash("An error occurred while compressing the PDF.")
-        return redirect(url_for('compress_tool'))
+        return redirect(url_for('compress'))
 
-# --- Protect PDF Tool ---
-@app.route('/protect-tool')
-def protect_tool():
-    return render_template('protect.html')
-
-@app.route('/protect', methods=['POST'])
-def protect():
+@app.route('/protect-process', methods=['POST'])
+def protect_process():
     file = request.files.get('pdf_file')
     password = request.form.get('password')
     if not file or not password:
         flash("Please provide both a file and a password.")
-        return redirect(url_for('protect_tool'))
+        return redirect(url_for('protect'))
     try:
         reader = PdfReader(file.stream)
         writer = PdfWriter()
@@ -366,29 +354,18 @@ def protect():
         writer.close()
         output_buffer.seek(0)
         
-        return send_file(
-            output_buffer,
-            as_attachment=True,
-            download_name='protected.pdf',
-            mimetype='application/pdf'
-        )
+        return send_file(output_buffer, as_attachment=True, download_name='protected.pdf', mimetype='application/pdf')
     except Exception as e:
-        print(f"Error during PDF protection: {e}")
         flash("An error occurred while protecting the PDF.")
-        return redirect(url_for('protect_tool'))
+        return redirect(url_for('protect'))
 
-# --- Unlock PDF Tool ---
-@app.route('/unlock-tool')
-def unlock_tool():
-    return render_template('unlock.html')
-
-@app.route('/unlock', methods=['POST'])
-def unlock():
+@app.route('/unlock-process', methods=['POST'])
+def unlock_process():
     file = request.files.get('pdf_file')
     password = request.form.get('password')
     if not file or not password:
         flash("Please provide both a file and a password.")
-        return redirect(url_for('unlock_tool'))
+        return redirect(url_for('unlock'))
     try:
         reader = PdfReader(file.stream)
         if reader.is_encrypted:
@@ -402,38 +379,27 @@ def unlock():
                 writer.close()
                 output_buffer.seek(0)
                 
-                return send_file(
-                    output_buffer,
-                    as_attachment=True,
-                    download_name='unlocked.pdf',
-                    mimetype='application/pdf'
-                )
+                return send_file(output_buffer, as_attachment=True, download_name='unlocked.pdf', mimetype='application/pdf')
             else:
                 flash("Incorrect password. Could not decrypt the PDF.")
-                return redirect(url_for('unlock_tool'))
+                return redirect(url_for('unlock'))
         else:
             flash("The provided PDF is not encrypted.")
-            return redirect(url_for('unlock_tool'))
+            return redirect(url_for('unlock'))
     except FileNotDecryptedError:
         flash("Incorrect password. Could not decrypt the PDF.")
-        return redirect(url_for('unlock_tool'))
+        return redirect(url_for('unlock'))
     except Exception as e:
-        print(f"Error during PDF unlocking: {e}")
         flash("An error occurred while processing the PDF.")
-        return redirect(url_for('unlock_tool'))
+        return redirect(url_for('unlock'))
 
-# --- Rotate PDF Tool ---
-@app.route('/rotate-tool')
-def rotate_tool():
-    return render_template('rotate.html')
-
-@app.route('/rotate', methods=['POST'])
-def rotate():
+@app.route('/rotate-process', methods=['POST'])
+def rotate_process():
     file = request.files.get('pdf_file')
     rotation = int(request.form.get('rotation', 90))
     if not file:
         flash("Please select a PDF file.")
-        return redirect(url_for('rotate_tool'))
+        return redirect(url_for('rotate'))
     try:
         reader = PdfReader(file.stream)
         writer = PdfWriter()
@@ -446,29 +412,18 @@ def rotate():
         writer.close()
         output_buffer.seek(0)
         
-        return send_file(
-            output_buffer,
-            as_attachment=True,
-            download_name='rotated.pdf',
-            mimetype='application/pdf'
-        )
+        return send_file(output_buffer, as_attachment=True, download_name='rotated.pdf', mimetype='application/pdf')
     except Exception as e:
-        print(f"Error during PDF rotation: {e}")
         flash("An error occurred while rotating the PDF.")
-        return redirect(url_for('rotate_tool'))
+        return redirect(url_for('rotate'))
 
-# --- Add Page Numbers Tool ---
-@app.route('/add-page-numbers-tool')
-def add_page_numbers_tool():
-    return render_template('add_page_numbers.html')
-
-@app.route('/add-page-numbers', methods=['POST'])
-def add_page_numbers():
+@app.route('/add-page-numbers-process', methods=['POST'])
+def add_page_numbers_process():
     file = request.files.get('pdf_file')
     position = request.form.get('position', 'bottom-center')
     if not file:
         flash("Please select a PDF file.")
-        return redirect(url_for('add_page_numbers_tool'))
+        return redirect(url_for('add_page_numbers'))
     try:
         pdf_document = fitz.open(stream=file.read(), filetype="pdf")
         
@@ -499,22 +454,16 @@ def add_page_numbers():
         
         return send_file(output_buffer, as_attachment=True, download_name='numbered.pdf', mimetype='application/pdf')
     except Exception as e:
-        print(f"Error adding page numbers: {e}")
-        flash("An error occurred while adding page numbers.")
-        return redirect(url_for('add_page_numbers_tool'))
+        flash("An error adding page numbers.")
+        return redirect(url_for('add_page_numbers'))
 
-# --- Add Watermark Tool ---
-@app.route('/add-watermark-tool')
-def add_watermark_tool():
-    return render_template('add_watermark.html')
-
-@app.route('/add-watermark', methods=['POST'])
-def add_watermark():
+@app.route('/add-watermark-process', methods=['POST'])
+def add_watermark_process():
     file = request.files.get('pdf_file')
     watermark_text = request.form.get('watermark_text')
     if not file or not watermark_text:
         flash("Please provide a file and watermark text.")
-        return redirect(url_for('add_watermark_tool'))
+        return redirect(url_for('add_watermark'))
     try:
         pdf_document = fitz.open(stream=file.read(), filetype="pdf")
         
@@ -530,22 +479,16 @@ def add_watermark():
         
         return send_file(output_buffer, as_attachment=True, download_name='watermarked.pdf', mimetype='application/pdf')
     except Exception as e:
-        print(f"Error adding watermark: {e}")
         flash("An error occurred while adding the watermark.")
-        return redirect(url_for('add_watermark_tool'))
+        return redirect(url_for('add_watermark'))
 
-# --- Delete Pages Tool ---
-@app.route('/delete-pages-tool')
-def delete_pages_tool():
-    return render_template('delete_pages.html')
-
-@app.route('/delete-pages', methods=['POST'])
-def delete_pages():
+@app.route('/delete-pages-process', methods=['POST'])
+def delete_pages_process():
     file = request.files.get('pdf_file')
     page_numbers_str = request.form.get('page_numbers')
     if not file or not page_numbers_str:
         flash("Please provide a file and page numbers to delete.")
-        return redirect(url_for('delete_pages_tool'))
+        return redirect(url_for('delete_pages'))
     try:
         pdf_document = fitz.open(stream=file.read(), filetype="pdf")
         max_pages = len(pdf_document)
@@ -554,37 +497,35 @@ def delete_pages():
         
         if not pages_to_delete:
             flash("Invalid page numbers provided.")
-            return redirect(url_for('delete_pages_tool'))
+            return redirect(url_for('delete_pages'))
             
-        for page_index in reversed(pages_to_delete):
-            pdf_document.delete_page(page_index)
+        # PyMuPDF requires a list of page numbers to *keep*, not delete.
+        # So we create a list of all pages, then remove the ones to be deleted.
+        all_pages = list(range(max_pages))
+        pages_to_keep = [p for p in all_pages if p not in pages_to_delete]
+        
+        pdf_document.select(pages_to_keep)
 
         output_buffer = io.BytesIO()
         pdf_document.save(output_buffer)
         pdf_document.close()
         output_buffer.seek(0)
         
-        return send_file(output_buffer, as_attachment=True, download_name='deleted_pages.pdf', mimetype='application/pdf')
+        return send_file(output_buffer, as_attachment=True, download_name='pages_removed.pdf', mimetype='application/pdf')
     except ValueError as e:
         flash(str(e))
-        return redirect(url_for('delete_pages_tool'))
+        return redirect(url_for('delete_pages'))
     except Exception as e:
-        print(f"Error deleting pages: {e}")
         flash("An error occurred while deleting pages.")
-        return redirect(url_for('delete_pages_tool'))
+        return redirect(url_for('delete_pages'))
 
-# --- Organize Pages Tool ---
-@app.route('/organize-pages-tool')
-def organize_pages_tool():
-    return render_template('organize_pages.html')
-
-@app.route('/organize-pages', methods=['POST'])
-def organize_pages():
+@app.route('/organize-pages-process', methods=['POST'])
+def organize_pages_process():
     file = request.files.get('pdf_file')
     page_order_str = request.form.get('page_order')
     if not file or not page_order_str:
         flash("Please provide a file and the new page order.")
-        return redirect(url_for('organize_pages_tool'))
+        return redirect(url_for('organize_pages'))
     try:
         pdf_document = fitz.open(stream=file.read(), filetype="pdf")
         max_pages = len(pdf_document)
@@ -593,7 +534,7 @@ def organize_pages():
         
         if not new_order_indices:
             flash("Invalid page order provided.")
-            return redirect(url_for('organize_pages_tool'))
+            return redirect(url_for('organize_pages'))
         
         pdf_document.select(new_order_indices)
 
@@ -605,23 +546,17 @@ def organize_pages():
         return send_file(output_buffer, as_attachment=True, download_name='organized.pdf', mimetype='application/pdf')
     except ValueError as e:
         flash(str(e))
-        return redirect(url_for('organize_pages_tool'))
+        return redirect(url_for('organize_pages'))
     except Exception as e:
-        print(f"Error organizing pages: {e}")
         flash("An error occurred while organizing pages.")
-        return redirect(url_for('organize_pages_tool'))
+        return redirect(url_for('organize_pages'))
 
-# --- [FINAL BATCH] Repair PDF Tool ---
-@app.route('/repair-tool')
-def repair_tool():
-    return render_template('repair.html')
-
-@app.route('/repair', methods=['POST'])
-def repair():
+@app.route('/repair-process', methods=['POST'])
+def repair_process():
     file = request.files.get('pdf_file')
     if not file:
         flash("Please select a PDF file to repair.")
-        return redirect(url_for('repair_tool'))
+        return redirect(url_for('repair'))
     try:
         pdf_document = fitz.open(stream=file.read(), filetype="pdf")
         output_buffer = io.BytesIO()
@@ -629,45 +564,63 @@ def repair():
         pdf_document.close()
         output_buffer.seek(0)
         
-        return send_file(
-            output_buffer,
-            as_attachment=True,
-            download_name='repaired.pdf',
-            mimetype='application/pdf'
-        )
+        return send_file(output_buffer, as_attachment=True, download_name='repaired.pdf', mimetype='application/pdf')
     except Exception as e:
-        print(f"Error repairing PDF: {e}")
         flash("Could not repair the PDF. The file may be too corrupted.")
-        return redirect(url_for('repair_tool'))
+        return redirect(url_for('repair'))
 
-# --- [FINAL BATCH] PDF/A to PDF Tool ---
-@app.route('/pdfa-to-pdf-tool')
-def pdfa_to_pdf_tool():
-    return render_template('pdfa_to_pdf.html')
-
-@app.route('/pdfa-to-pdf', methods=['POST'])
-def pdfa_to_pdf():
+@app.route('/pdfa-to-pdf-process', methods=['POST'])
+def pdfa_to_pdf_process():
     file = request.files.get('pdf_file')
     if not file:
         flash("Please select a PDF/A file.")
-        return redirect(url_for('pdfa_to_pdf_tool'))
+        return redirect(url_for('pdfa_to_pdf'))
     try:
         pdf_document = fitz.open(stream=file.read(), filetype="pdf")
         output_buffer = io.BytesIO()
+        # Simply saving it without PDF/A options converts it back to a standard PDF
         pdf_document.save(output_buffer)
         pdf_document.close()
         output_buffer.seek(0)
         
-        return send_file(
-            output_buffer,
-            as_attachment=True,
-            download_name='converted_from_pdfa.pdf',
-            mimetype='application/pdf'
-        )
+        return send_file(output_buffer, as_attachment=True, download_name='converted_from_pdfa.pdf', mimetype='application/pdf')
     except Exception as e:
-        print(f"Error converting PDF/A: {e}")
         flash("An error occurred during conversion. Ensure the file is a valid PDF/A.")
-        return redirect(url_for('pdfa_to_pdf_tool'))
+        return redirect(url_for('pdfa_to_pdf'))
+
+
+# --- SEO / Sitemap ---
+@app.route('/sitemap.xml')
+def sitemap():
+    pages = []
+    # احصل على تاريخ اليوم بتنسيق مناسب لـ sitemap
+    lastmod_date = datetime.now().strftime('%Y-%m-%d')
+    
+    # رابط الصفحة الرئيسية
+    pages.append({'loc': url_for('index', _external=True), 'lastmod': lastmod_date, 'priority': '1.0'})
+
+    # قائمة بأسماء الدوال الخاصة بصفحات الأدوات
+    tool_routes = [
+        'merge', 'split', 'compress', 'protect', 'unlock', 'rotate', 
+        'delete_pages', 'add_page_numbers', 'add_watermark', 'organize_pages',
+        'extract_pages', 'extract_images', 'image_to_pdf', 'pdf_to_word',
+        'word_to_pdf', 'html_to_pdf', 'pdf_to_images', 'repair', 'pdfa_to_pdf'
+    ]
+
+    for route in tool_routes:
+        # تأكد من وجود الدالة قبل محاولة إنشاء الرابط
+        if route in app.view_functions:
+            pages.append({
+                'loc': url_for(route, _external=True),
+                'lastmod': lastmod_date,
+                'priority': '0.8'
+            })
+
+    sitemap_xml = render_template('sitemap_template.xml', pages=pages)
+    response = make_response(sitemap_xml)
+    response.headers["Content-Type"] = "application/xml"
+
+    return response
 
 
 if __name__ == '__main__':

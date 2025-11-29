@@ -1,35 +1,31 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>فصل PDF - أدوات PDF المتكاملة</title>
-    
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    
-    <!-- Our Custom CSS -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css' ) }}">
-</head>
-<body>
+{% extends "base.html" %}
 
-    <div class="tool-container">
-        <h1 class="mb-4">أداة فصل ملف PDF</h1>
-        <p class="text-muted">اختر ملف PDF واحد، وسنقوم بفصله إلى صفحات فردية في ملف مضغوط (ZIP).</p>
+{% block title %}أداة فصل PDF{% endblock %}
 
-        <form action="/split" method="post" enctype="multipart/form-data">
-            <div class="mb-3">
-                <label for="pdf_file" class="form-label">اختر الملف:</label>
-                <input class="form-control" type="file" id="pdf_file" name="pdf_file" required>
+{% block content %}
+<div class="text-center mb-5">
+    <h1 class="display-5">فصل ملف PDF</h1>
+    <p class="lead">اختر ملف PDF واحد، وسنقوم بفصله إلى صفحات فردية في ملف مضغوط (ZIP).</p>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow-sm">
+            <div class="card-body p-5">
+                <form action="/split" method="post" enctype="multipart/form-data">
+                    <div class="mb-4">
+                        <label for="pdf_file" class="form-label h5">اختر ملف PDF الذي تريد فصله:</label>
+                        <input type="file" class="form-control form-control-lg" id="pdf_file" name="pdf_file" required>
+                    </div>
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary btn-lg">فصل و تحميل</button>
+                    </div>
+                </form>
             </div>
-            
-            <div class="d-grid">
-                <button type="submit" class="btn btn-primary btn-lg">فصل و تحميل</button>
-            </div>
-        </form>
-
-        <a href="/" class="back-link">العودة إلى الصفحة الرئيسية</a>
+        </div>
+        <div class="text-center mt-4">
+            <a href="/" class="btn btn-secondary">العودة إلى الصفحة الرئيسية</a>
+        </div>
     </div>
-
-</body>
-</html>
+</div>
+{% endblock %}

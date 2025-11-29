@@ -2,17 +2,19 @@ import os
 import io
 import zipfile
 import tempfile
-from flask import Flask, render_template, request, send_file, flash, redirect, url_for, make_response
+# تم استيراد send_from_directory
+from flask import Flask, render_template, request, send_file, flash, redirect, url_for, make_response, send_from_directory
 from PyPDF2 import PdfReader, PdfWriter
 from PyPDF2.errors import FileNotDecryptedError
 import fitz  # PyMuPDF
 from PIL import Image
 import pdfkit
-from datetime import datetime # <-- إضافة مهمة
+from datetime import datetime
 
 app = Flask(__name__)
-app.secret_key = 'a_super_secret_key' # Needed for flashing messages
+app.secret_key = 'a_super_secret_key'
 
+# ... (كل الكود من parse_page_numbers حتى نهاية دوال المعالجة يبقى كما هو بدون تغيير) ...
 # --- Helper function for parsing page ranges (used in multiple tools) ---
 def parse_page_numbers(page_str, max_pages):
     pages_to_process = set()
@@ -499,8 +501,6 @@ def delete_pages_process():
             flash("Invalid page numbers provided.")
             return redirect(url_for('delete_pages'))
             
-        # PyMuPDF requires a list of page numbers to *keep*, not delete.
-        # So we create a list of all pages, then remove the ones to be deleted.
         all_pages = list(range(max_pages))
         pages_to_keep = [p for p in all_pages if p not in pages_to_delete]
         
@@ -578,7 +578,6 @@ def pdfa_to_pdf_process():
     try:
         pdf_document = fitz.open(stream=file.read(), filetype="pdf")
         output_buffer = io.BytesIO()
-        # Simply saving it without PDF/A options converts it back to a standard PDF
         pdf_document.save(output_buffer)
         pdf_document.close()
         output_buffer.seek(0)
@@ -590,16 +589,19 @@ def pdfa_to_pdf_process():
 
 
 # --- SEO / Sitemap ---
+
+# تمت إضافة هذا المسار لخدمة ملف robots.txt من المجلد static
+@app.route('/robots.txt')
+def robots_txt():
+    return send_from_directory(app.static_folder, 'robots.txt')
+
 @app.route('/sitemap.xml')
 def sitemap():
     pages = []
-    # احصل على تاريخ اليوم بتنسيق مناسب لـ sitemap
     lastmod_date = datetime.now().strftime('%Y-%m-%d')
     
-    # رابط الصفحة الرئيسية
     pages.append({'loc': url_for('index', _external=True), 'lastmod': lastmod_date, 'priority': '1.0'})
 
-    # قائمة بأسماء الدوال الخاصة بصفحات الأدوات
     tool_routes = [
         'merge', 'split', 'compress', 'protect', 'unlock', 'rotate', 
         'delete_pages', 'add_page_numbers', 'add_watermark', 'organize_pages',
@@ -608,7 +610,6 @@ def sitemap():
     ]
 
     for route in tool_routes:
-        # تأكد من وجود الدالة قبل محاولة إنشاء الرابط
         if route in app.view_functions:
             pages.append({
                 'loc': url_for(route, _external=True),

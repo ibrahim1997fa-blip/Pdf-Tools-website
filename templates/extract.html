@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>استخراج الصور - أدوات PDF المتكاملة</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Our Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css' ) }}">
+</head>
+<body>
+
+    <div class="tool-container">
+        <h1 class="mb-4">أداة استخراج الصور من PDF</h1>
+        <p class="text-muted">اختر ملف PDF، وسنستخرج كل الصور منه ونضعها في ملف مضغوط (ZIP).</p>
+
+        <form action="/extract-images" method="post" enctype="multipart/form-data">
+            <div class="mb-3">
+                <label for="pdf_file" class="form-label">اختر الملف:</label>
+                <input class="form-control" type="file" id="pdf_file" name="pdf_file" required>
+            </div>
+            
+            <div class="d-grid">
+                <button type="submit" class="btn btn-primary btn-lg">استخراج و تحميل</button>
+            </div>
+        </form>
+
+        <a href="/" class="back-link">العودة إلى الصفحة الرئيسية</a>
+    </div>
+
+</body>
+</html>

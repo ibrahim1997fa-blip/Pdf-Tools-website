@@ -1,0 +1,61 @@
+/* General Body Styles */
+body {
+    background-color: #f8f9fa; /* A light grey background from Bootstrap's color palette */
+    font-family: 'Cairo', sans-serif; /* Suggestion: A nice Arabic font. We can add it later. */
+}
+
+/* Card Styles */
+.card {
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    border: none; /* Remove the default border */
+}
+
+.card:hover {
+    transform: translateY(-5px); /* Lift the card up slightly on hover */
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1) !important; /* A more prominent shadow on hover */
+}
+
+.card-title {
+    color: #0d6efd; /* Bootstrap's primary blue color for titles */
+}
+
+.btn-primary {
+    /* We can add custom styles for our primary button here if we want */
+    /* For now, we will use Bootstrap's default which is great */
+}
+
+/* Container for inner pages */
+.tool-container {
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 30px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.07);
+}
+
+/* Styles for form elements on inner pages */
+.tool-container form {
+    margin-top: 20px;
+}
+
+.tool-container .form-label {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.tool-container .form-control {
+    margin-bottom: 15px;
+}
+
+.back-link {
+    display: block;
+    margin-top: 30px;
+    text-align: center;
+    color: #6c757d; /* Bootstrap's secondary text color */
+    text-decoration: none;
+}
+
+.back-link:hover {
+    text-decoration: underline;
+}

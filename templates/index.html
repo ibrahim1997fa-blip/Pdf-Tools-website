@@ -93,4 +93,131 @@
             <div class="card-body text-center">
                 <h5 class="card-title">ترقيم الصفحات</h5>
                 <p class="card-text">أضف أرقام الصفحات إلى ملف PDF.</p>
-                <a href="{{ url_for('add_page_nu
+                <a href="{{ url_for('add_page_numbers') }}" class="stretched-link"></a>
+            </div>
+        </div>
+    </div>
+
+    <!-- إضافة علامة مائية -->
+    <div class="col">
+        <div class="card h-100 tool-card shadow-sm">
+            <div class="card-body text-center">
+                <h5 class="card-title">إضافة علامة مائية</h5>
+                <p class="card-text">ضع نصًا كعلامة مائية على الصفحات.</p>
+                <a href="{{ url_for('add_watermark') }}" class="stretched-link"></a>
+            </div>
+        </div>
+    </div>
+
+    <!-- تنظيم الصفحات -->
+    <div class="col">
+        <div class="card h-100 tool-card shadow-sm">
+            <div class="card-body text-center">
+                <h5 class="card-title">تنظيم الصفحات</h5>
+                <p class="card-text">أعد ترتيب صفحات ملف PDF.</p>
+                <a href="{{ url_for('organize_pages') }}" class="stretched-link"></a>
+            </div>
+        </div>
+    </div>
+
+    <!-- استخراج صفحات -->
+    <div class="col">
+        <div class="card h-100 tool-card shadow-sm">
+            <div class="card-body text-center">
+                <h5 class="card-title">استخراج صفحات</h5>
+                <p class="card-text">أنشئ ملف PDF جديد من صفحات محددة.</p>
+                <a href="{{ url_for('extract_pages') }}" class="stretched-link"></a>
+            </div>
+        </div>
+    </div>
+
+    <!-- استخراج الصور -->
+    <div class="col">
+        <div class="card h-100 tool-card shadow-sm">
+            <div class="card-body text-center">
+                <h5 class="card-title">استخراج الصور</h5>
+                <p class="card-text">استخرج كل الصور من ملف PDF.</p>
+                <a href="{{ url_for('extract_images') }}" class="stretched-link"></a>
+            </div>
+        </div>
+    </div>
+
+    <!-- صورة إلى PDF -->
+    <div class="col">
+        <div class="card h-100 tool-card shadow-sm">
+            <div class="card-body text-center">
+                <h5 class="card-title">صورة إلى PDF</h5>
+                <p class="card-text">حوّل صور JPG إلى ملف PDF.</p>
+                <a href="{{ url_for('image_to_pdf') }}" class="stretched-link"></a>
+            </div>
+        </div>
+    </div>
+
+    <!-- PDF إلى Word (نص) -->
+    <div class="col">
+        <div class="card h-100 tool-card shadow-sm">
+            <div class="card-body text-center">
+                <h5 class="card-title">PDF إلى نص</h5>
+                <p class="card-text">استخرج النص من ملف PDF إلى ملف txt.</p>
+                <a href="{{ url_for('pdf_to_word') }}" class="stretched-link"></a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Word إلى PDF (معطل) -->
+    <div class="col">
+        <div class="card h-100 tool-card shadow-sm disabled-card">
+            <div class="card-body text-center">
+                <h5 class="card-title">Word إلى PDF</h5>
+                <p class="card-text">حوّل ملفات Word إلى PDF (غير متاح حاليًا).</p>
+                <a href="#" class="stretched-link disabled"></a>
+            </div>
+        </div>
+    </div>
+
+    <!-- HTML إلى PDF -->
+    <div class="col">
+        <div class="card h-100 tool-card shadow-sm">
+            <div class="card-body text-center">
+                <h5 class="card-title">HTML إلى PDF</h5>
+                <p class="card-text">حوّل صفحات الويب إلى PDF.</p>
+                <a href="{{ url_for('html_to_pdf') }}" class="stretched-link"></a>
+            </div>
+        </div>
+    </div>
+
+    <!-- PDF إلى صور -->
+    <div class="col">
+        <div class="card h-100 tool-card shadow-sm">
+            <div class="card-body text-center">
+                <h5 class="card-title">PDF إلى صور</h5>
+                <p class="card-text">حوّل صفحات PDF إلى صور JPG.</p>
+                <a href="{{ url_for('pdf_to_images') }}" class="stretched-link"></a>
+            </div>
+        </div>
+    </div>
+
+    <!-- إصلاح PDF -->
+    <div class="col">
+        <div class="card h-100 tool-card shadow-sm">
+            <div class="card-body text-center">
+                <h5 class="card-title">إصلاح PDF</h5>
+                <p class="card-text">حاول إصلاح ملفات PDF التالفة.</p>
+                <a href="{{ url_for('repair') }}" class="stretched-link"></a>
+            </div>
+        </div>
+    </div>
+
+    <!-- PDF/A إلى PDF -->
+    <div class="col">
+        <div class="card h-100 tool-card shadow-sm">
+            <div class="card-body text-center">
+                <h5 class="card-title">PDF/A إلى PDF</h5>
+                <p class="card-text">حوّل ملفات PDF/A إلى PDF عادي.</p>
+                <a href="{{ url_for('pdfa_to_pdf') }}" class="stretched-link"></a>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
